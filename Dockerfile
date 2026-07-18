@@ -8,9 +8,8 @@ RUN pip install --no-cache-dir \
 RUN git clone https://github.com/ruihangzhang97/proxypose.git /opt/proxypose && \
     cd /opt/proxypose && pip install --no-cache-dir -e .
 
-RUN pip install --no-cache-dir gradio huggingface_hub diffusers transformers accelerate imageio imageio-ffmpeg
+RUN pip install --no-cache-dir gradio huggingface_hub diffusers transformers accelerate imageio imageio-ffmpeg jupyterlab ipykernel
 
 WORKDIR /workspace
-RUN pip install --no-cache-dir jupyterlab
 
 CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root", "--NotebookApp.token=''"]
