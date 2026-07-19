@@ -7,25 +7,21 @@ RUN pip install --no-cache-dir \
     torch==2.4.0 torchvision==0.19.0 torchaudio==2.4.0 \
     --index-url https://download.pytorch.org/whl/cu121
 
-# Bygg pytorch3d från source med CUDA
-RUN FORCE_CUDA=1 pip install --no-cache-dir --no-build-isolation \
-    "git+https://github.com/facebookresearch/pytorch3d.git@stable"
-
-# Klona och installera ProxyPose
+# Klona och installera ProxyPose (pytorch3d installeras vid start istället)
 RUN git clone https://github.com/ruihangzhang97/proxypose.git /opt/proxypose && \
-    cd /opt/proxypose && pip install --no-cache-dir -e .
-
-# Installera övriga beroenden med kompatibla versioner
-RUN pip install --no-cache-dir \
-    transformers==4.44.0 \
-    gradio \
-    huggingface_hub \
-    diffusers \
-    accelerate \
-    imageio \
-    imageio-ffmpeg \
-    jupyterlab \
-    ipykernel
+    cd /opt/proxypose && pip install --no-cache-dir -e . --no-deps && \
+    pip install --no-cache-dir \
+        transformers==4.44.0 \
+        gradio \
+        huggingface_hub \
+        diffusers \
+        accelerate \
+        imageio \
+        imageio-ffmpeg \
+        jupyterlab \
+        ipykernel \
+        einops \
+        omegaconf
 
 # Fixa config för lokala modellvikter
 RUN sed -i 's|local_model_path: ~/.cache/proxypose/|local_model_path: /workspace/models/|' \
@@ -39,6 +35,9 @@ ENV HF_HOME=/workspace/hf_cache
 ENV HUGGINGFACE_HUB_CACHE=/workspace/hf_cache
 ENV TMPDIR=/workspace/tmp
 
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
 WORKDIR /workspace
 
-CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root", "--NotebookApp.token=''"]
+CMD ["/start.sh"]
