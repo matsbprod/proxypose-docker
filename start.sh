@@ -1,6 +1,12 @@
 #!/bin/bash
 
-mkdir -p /workspace/hf_cache /workspace/tmp
+mkdir -p /workspace/hf_cache /workspace/tmp /workspace/video
+
+# Synka videofiler från Google Drive
+echo "Laddar ner videofiler från Google Drive..."
+pip install gdown --quiet 2>/dev/null
+gdown --folder "https://drive.google.com/drive/folders/1uzOTk29f-J3LvyCenyyGw2RO6W1aKZTE" \
+    -O /workspace/video/ --remaining-ok
 
 # Installera pytorch3d från sparad wheel, annars bygg från source
 if ! python -c "import pytorch3d" 2>/dev/null; then
